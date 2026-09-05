@@ -14,7 +14,17 @@ const mongoUri = process.env.MONGO_URI
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin(origin, callback) {
+      const allowedOrigin = process.env.CLIENT_URL
+      const isLocalOrigin = !origin || origin === 'http://localhost:5173'
+      const isVercelOrigin = origin?.endsWith('.vercel.app')
+
+      if (isLocalOrigin || origin === allowedOrigin || isVercelOrigin) {
+        return callback(null, true)
+      }
+
+      return callback(new Error('Origin is not allowed by CORS'))
+    },
   })
 )
 
