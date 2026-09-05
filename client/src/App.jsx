@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 const initialForm = {
   name: '',
   email: '',
@@ -38,7 +40,7 @@ function App() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(mode === 'register' ? '/api/register' : '/api/login', {
+      const response = await fetch(`${API_URL}${mode === 'register' ? '/api/register' : '/api/login'}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -63,7 +65,7 @@ function App() {
       if (accountView === 'edit' && accountForm) {
         async function saveAccount(event) {
           event.preventDefault()
-          const response = await fetch(`/api/account/${currentUser.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(accountForm) })
+          const response = await fetch(`${API_URL}/api/account/${currentUser.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(accountForm) })
           const result = await response.json()
           if (!response.ok) throw new Error(result.message || 'Unable to update account')
           setCurrentUser(result.user)
