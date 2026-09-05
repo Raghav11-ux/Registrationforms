@@ -258,6 +258,62 @@ app.put('/api/account/:id', async (request, response) => {
   }
 })
 
+app.get('/api/users', async (request, response) => {
+  try {
+    const users = await User.find({}).select('name email phone dob gender createdAt').sort({ createdAt: -1 })
+    return response.json({
+      users: users.map((user) => ({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        dob: user.dob,
+        gender: user.gender,
+        createdAt: user.createdAt,
+      })),
+    })
+  } catch (error) {
+    console.error('Users fetch error:', error)
+    return response.status(500).json({ message: 'Unable to load users' })
+  }
+})
+
+app.get('/api/stats', async (request, response) => {
+  try {
+    const totalUsers = await User.countDocuments()
+    const currentDate = new Date()
+    const startOfDay = new Date(currentDate)
+    startOfDay.setHours(0, 0, 0, 0)
+
+    const activeToday = await User.countDocuments({ createdAt: { $gte: startOfDay } })
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    const signupsThisWeek = await User.countDocuments({ createdAt: { $gte: weekAgo } })
+
+    return response.json({
+      totalUsers,
+      activeToday,
+      signupsThisWeek,
+    })
+  } catch (error) {
+    console.error('Stats fetch error:', error)
+    return response.status(500).json({ message: 'Unable to load stats' })
+  }
+})
+
+app.delete('/api/users/:id', async (request, response) => {
+  try {
+    const user = await User.findByIdAndDelete(request.params.id)
+    if (!user) {
+      return response.status(404).json({ message: 'User not found' })
+    }
+
+    return response.json({ message: 'User removed successfully' })
+  } catch (error) {
+    console.error('User delete error:', error)
+    return response.status(500).json({ message: 'Unable to remove user' })
+  }
+})
+
 // Start server
 async function startServer() {
   app.listen(port, () => {
