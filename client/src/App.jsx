@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://registrationforms-1.onrender.com'
@@ -12,16 +12,6 @@ const initialForm = {
   password: '',
 }
 
-const starterTasks = [
-  { id: 1, title: 'Review your account details', description: 'Make sure your contact information is up to date.', completed: false },
-  { id: 2, title: 'Explore your member area', description: 'Take a moment to see what you can manage here.', completed: true },
-]
-
-function getSavedTasks(email) {
-  const savedTasks = window.localStorage.getItem(`member-tasks-${email}`)
-  return savedTasks ? JSON.parse(savedTasks) : starterTasks
-}
-
 function App() {
   const [mode, setMode] = useState('register')
   const [form, setForm] = useState(initialForm)
@@ -33,18 +23,11 @@ function App() {
   const [hasContinued, setHasContinued] = useState(false)
   const [accountView, setAccountView] = useState('details')
   const [accountForm, setAccountForm] = useState(null)
-  const [tasks, setTasks] = useState(starterTasks)
-  const [taskForm, setTaskForm] = useState({ title: '', description: '' })
-  const [editingTaskId, setEditingTaskId] = useState(null)
   const passwordScore = [
     form.password.length >= 6,
     /[A-Z]/.test(form.password),
     /\d/.test(form.password),
   ].filter(Boolean).length
-
-  useEffect(() => {
-    if (currentUser) window.localStorage.setItem(`member-tasks-${currentUser.email}`, JSON.stringify(tasks))
-  }, [currentUser, tasks])
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -68,7 +51,6 @@ function App() {
 
       setStatus({ type: 'success', message: result.message })
       setAccountName(result.user.name)
-      setTasks(getSavedTasks(result.user.email))
       setCurrentUser(result.user)
       setAccountView('dashboard')
       setHasContinued(true)
@@ -141,74 +123,6 @@ function App() {
         )
       }
 
-      if (accountView === 'tasks') {
-        function handleTaskSubmit(event) {
-          event.preventDefault()
-          const title = taskForm.title.trim()
-          const description = taskForm.description.trim()
-          if (!title) return
-
-          if (editingTaskId) {
-            setTasks((currentTasks) => currentTasks.map((task) => task.id === editingTaskId ? { ...task, title, description } : task))
-          } else {
-            setTasks((currentTasks) => [...currentTasks, { id: Date.now(), title, description, completed: false }])
-          }
-
-          setTaskForm({ title: '', description: '' })
-          setEditingTaskId(null)
-        }
-
-        const completedTasks = tasks.filter((task) => task.completed).length
-
-        return (
-          <main className="tasks-page">
-            <header className="tasks-header">
-              <button type="button" className="text-button" onClick={() => setAccountView('dashboard')}>← Dashboard</button>
-              <button type="button" className="profile-button" onClick={() => setAccountView('details')} aria-label="Open account details" title="Account details">
-                {currentUser.name.charAt(0).toUpperCase()}
-              </button>
-            </header>
-            <section className="tasks-layout">
-              <div className="tasks-heading">
-                <p className="eyebrow">Your workspace</p>
-                <h1>Tasks that move you forward.</h1>
-                <p>Keep your next steps in one calm, focused place.</p>
-                <div className="task-progress" aria-label={`${completedTasks} of ${tasks.length} tasks complete`}>
-                  <span style={{ width: tasks.length ? `${(completedTasks / tasks.length) * 100}%` : '0%' }} />
-                </div>
-                <small>{completedTasks} of {tasks.length} tasks complete</small>
-              </div>
-
-              <form className="task-form" onSubmit={handleTaskSubmit}>
-                <div>
-                  <p className="card-label">{editingTaskId ? 'Edit task' : 'Add a task'}</p>
-                  <h2>{editingTaskId ? 'Make a quick update' : 'What needs your attention?'}</h2>
-                </div>
-                <label>Task title<input value={taskForm.title} onChange={(event) => setTaskForm({ ...taskForm, title: event.target.value })} placeholder="e.g. Update my profile" required /></label>
-                <label>Notes <span className="optional-label">Optional</span><textarea value={taskForm.description} onChange={(event) => setTaskForm({ ...taskForm, description: event.target.value })} placeholder="Add a little context" rows="3" /></label>
-                <div className="task-form-actions">
-                  <button type="submit">{editingTaskId ? 'Save task' : 'Add task'}</button>
-                  {editingTaskId && <button type="button" className="cancel-button" onClick={() => { setEditingTaskId(null); setTaskForm({ title: '', description: '' }) }}>Cancel</button>}
-                </div>
-              </form>
-
-              <section className="task-list" aria-label="Your tasks">
-                <div className="task-list-heading"><div><p className="card-label">Task list</p><h2>{tasks.length ? 'Your current priorities' : 'Nothing on your list yet'}</h2></div><span>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}</span></div>
-                {tasks.length ? tasks.map((task) => (
-                  <article className={`task-item${task.completed ? ' completed' : ''}`} key={task.id}>
-                    <button type="button" className="task-check" onClick={() => setTasks((currentTasks) => currentTasks.map((item) => item.id === task.id ? { ...item, completed: !item.completed } : item))} aria-label={task.completed ? `Mark ${task.title} as incomplete` : `Mark ${task.title} as complete`}>
-                      {task.completed ? '✓' : ''}
-                    </button>
-                    <div className="task-copy"><h3>{task.title}</h3><p>{task.description || 'No notes added.'}</p></div>
-                    <div className="task-actions"><button type="button" onClick={() => { setEditingTaskId(task.id); setTaskForm({ title: task.title, description: task.description }) }}>Edit</button><button type="button" className="delete-task" onClick={() => setTasks((currentTasks) => currentTasks.filter((item) => item.id !== task.id))}>Delete</button></div>
-                  </article>
-                )) : <p className="empty-tasks">Add your first task above to get started.</p>}
-              </section>
-            </section>
-          </main>
-        )
-      }
-
       return (
         <main className="dashboard-page">
           <header className="dashboard-header">
@@ -239,7 +153,6 @@ function App() {
                 <p>Use this email address whenever you sign in.</p>
               </article>
             </div>
-            <button type="button" className="explore-button" onClick={() => setAccountView('tasks')}>Continue to explore <span aria-hidden="true">→</span></button>
           </section>
         </main>
       )
