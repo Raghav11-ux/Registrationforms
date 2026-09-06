@@ -12,6 +12,11 @@ const initialForm = {
   password: '',
 }
 
+function getMemberId(userId) {
+  const numericId = Array.from(String(userId)).reduce((total, character) => total + character.charCodeAt(0), 0)
+  return `MEM-${String(numericId).padStart(6, '0').slice(-6)}`
+}
+
 function App() {
   const [mode, setMode] = useState('register')
   const [form, setForm] = useState(initialForm)
@@ -23,6 +28,7 @@ function App() {
   const [hasContinued, setHasContinued] = useState(false)
   const [accountView, setAccountView] = useState('details')
   const [accountForm, setAccountForm] = useState(null)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const passwordScore = [
     form.password.length >= 6,
     /[A-Z]/.test(form.password),
@@ -103,6 +109,7 @@ function App() {
               <h1>Account details</h1>
               <p className="account-message">Here is the information saved to your account.</p>
               <dl className="account-details">
+                <div><dt>Member ID</dt><dd>{getMemberId(currentUser.id)}</dd></div>
                 <div><dt>Full name</dt><dd>{currentUser.name}</dd></div>
                 <div><dt>Phone number</dt><dd>{currentUser.phone}</dd></div>
                 <div><dt>Date of birth</dt><dd>{currentUser.dob}</dd></div>
@@ -124,15 +131,16 @@ function App() {
       }
 
       return (
-        <main className="dashboard-page">
+        <main className={`dashboard-page${isDarkMode ? ' dark-dashboard' : ''}`}>
           <header className="dashboard-header">
             <div>
               <p className="eyebrow">Member dashboard</p>
               <h1>Welcome, {currentUser.name}</h1>
             </div>
-            <button type="button" className="profile-button" onClick={() => setAccountView('details')} aria-label="Open account details" title="Account details">
-              {currentUser.name.charAt(0).toUpperCase()}
-            </button>
+            <div className="dashboard-actions">
+              <button type="button" className="theme-button" onClick={() => setIsDarkMode(!isDarkMode)} aria-label={isDarkMode ? 'Use light theme' : 'Use dark theme'} title={isDarkMode ? 'Use light theme' : 'Use dark theme'}>{isDarkMode ? '☼' : '◐'}</button>
+              <button type="button" className="profile-button" onClick={() => setAccountView('details')} aria-label="Open account details" title="Account details">{currentUser.name.charAt(0).toUpperCase()}</button>
+            </div>
           </header>
           <section className="dashboard-content">
             <div className="dashboard-intro">
@@ -140,7 +148,7 @@ function App() {
               <h2>Your account is ready.</h2>
               <p>Keep your details up to date and manage your membership from one place.</p>
             </div>
-            <div className="dashboard-grid">
+            <div className="dashboard-grid dashboard-metrics">
               <article className="dashboard-card profile-summary">
                 <span className="card-label">Profile status</span>
                 <strong>Complete</strong>
@@ -148,11 +156,20 @@ function App() {
                 <button type="button" onClick={() => setAccountView('details')}>View account details</button>
               </article>
               <article className="dashboard-card">
-                <span className="card-label">Registered email</span>
-                <strong>{currentUser.email}</strong>
-                <p>Use this email address whenever you sign in.</p>
+                <span className="card-label">Member ID</span>
+                <strong>{getMemberId(currentUser.id)}</strong>
+                <p>Your unique membership reference.</p>
+              </article>
+              <article className="dashboard-card">
+                <span className="card-label">Account status</span>
+                <strong className="status-value"><span className="status-dot" />Active</strong>
+                <p>Your account is ready to use.</p>
               </article>
             </div>
+            <section className="activity-panel">
+              <div><p className="card-label">Recent activity</p><h2>Your membership timeline</h2></div>
+              <div className="activity-list"><div><span className="activity-icon">✓</span><p><strong>Account created</strong><small>Your registration was completed successfully.</small></p><time>Now</time></div><div><span className="activity-icon">↗</span><p><strong>Profile ready</strong><small>Your details are available from Account details.</small></p><time>Today</time></div></div>
+            </section>
           </section>
         </main>
       )

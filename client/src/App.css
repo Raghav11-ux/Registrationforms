@@ -341,6 +341,32 @@ button:disabled {
   border-bottom: 1px solid var(--line);
 }
 
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-button {
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--green);
+  font-size: 1.1rem;
+  box-shadow: none;
+}
+
+.theme-button:hover:not(:disabled) {
+  transform: rotate(12deg);
+  background: var(--green);
+  color: white;
+  box-shadow: none;
+}
+
 .dashboard-header h1 {
   max-width: 680px;
   font-size: clamp(2.6rem, 7vw, 5.8rem);
@@ -396,6 +422,10 @@ button:disabled {
   margin-top: 42px;
 }
 
+.dashboard-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .dashboard-card {
   min-height: 210px;
   padding: 26px;
@@ -433,6 +463,115 @@ button:disabled {
 .dashboard-card button:hover:not(:disabled) {
   background: var(--green);
   color: white;
+}
+
+.status-value {
+  display: flex !important;
+  align-items: center;
+  gap: 9px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4d9459;
+  box-shadow: 0 0 0 5px rgba(77, 148, 89, 0.12);
+}
+
+.activity-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+  gap: 32px;
+  margin-top: 18px;
+  padding: 26px;
+  border: 1px solid rgba(21, 63, 53, 0.1);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.activity-panel h2 {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.activity-list {
+  display: grid;
+  gap: 6px;
+}
+
+.activity-list > div {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.activity-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.activity-list p {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.activity-list strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.activity-list small,
+.activity-list time {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.dark-dashboard {
+  --dashboard-surface: rgba(28, 39, 36, 0.9);
+  background:
+    radial-gradient(circle at 85% 5%, rgba(235, 127, 98, 0.18), transparent 26%),
+    linear-gradient(135deg, #162823, #0f1b19);
+  color: #edf7ee;
+}
+
+.dark-dashboard .dashboard-header {
+  border-color: rgba(223, 246, 229, 0.14);
+}
+
+.dark-dashboard .dashboard-header h1,
+.dark-dashboard .dashboard-intro h2,
+.dark-dashboard .dashboard-card strong,
+.dark-dashboard .activity-panel h2,
+.dark-dashboard .activity-list strong {
+  color: #edf7ee;
+}
+
+.dark-dashboard .dashboard-intro > p:last-child,
+.dark-dashboard .dashboard-card p,
+.dark-dashboard .activity-list small,
+.dark-dashboard .activity-list time {
+  color: rgba(223, 246, 229, 0.68);
+}
+
+.dark-dashboard .dashboard-card,
+.dark-dashboard .activity-panel {
+  border-color: rgba(223, 246, 229, 0.12);
+  background: var(--dashboard-surface);
+}
+
+.dark-dashboard .theme-button {
+  border-color: rgba(223, 246, 229, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4d9c8;
 }
 
 .account-page {
@@ -668,6 +807,15 @@ button:disabled {
 
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-panel {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
 }
