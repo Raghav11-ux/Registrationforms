@@ -12,6 +12,39 @@ const initialForm = {
   password: '',
 }
 
+const initialIdeas = [
+  {
+    id: 1,
+    title: 'Affordable irrigation for small farms',
+    description: 'Many farmers lose crops when the monsoon arrives late. What low-cost water solutions could work for small plots?',
+    category: 'Water & irrigation',
+    location: 'Maharashtra',
+    status: 'Open for ideas',
+    votes: 28,
+    ideas: 7,
+  },
+  {
+    id: 2,
+    title: 'Better local access to crop storage',
+    description: 'A shared, nearby storage space could help families wait for fair market prices instead of selling immediately after harvest.',
+    category: 'Farming & markets',
+    location: 'Karnataka',
+    status: 'Open for ideas',
+    votes: 19,
+    ideas: 4,
+  },
+  {
+    id: 3,
+    title: 'Reliable transport to the health centre',
+    description: 'Families in nearby villages need a dependable way to reach healthcare during evenings and emergencies.',
+    category: 'Healthcare',
+    location: 'Odisha',
+    status: 'Being explored',
+    votes: 34,
+    ideas: 11,
+  },
+]
+
 function App() {
   const [mode, setMode] = useState('register')
   const [form, setForm] = useState(initialForm)
@@ -23,6 +56,10 @@ function App() {
   const [hasContinued, setHasContinued] = useState(false)
   const [accountView, setAccountView] = useState('details')
   const [accountForm, setAccountForm] = useState(null)
+  const [ideas, setIdeas] = useState(initialIdeas)
+  const [ideaForm, setIdeaForm] = useState({ title: '', description: '', category: 'Farming & markets', location: '' })
+  const [ideaFilter, setIdeaFilter] = useState('All topics')
+  const [showIdeaForm, setShowIdeaForm] = useState(false)
   const passwordScore = [
     form.password.length >= 6,
     /[A-Z]/.test(form.password),
@@ -123,12 +160,51 @@ function App() {
         )
       }
 
+      if (accountView === 'ideas') {
+        const categories = ['All topics', ...new Set(ideas.map((idea) => idea.category))]
+        const visibleIdeas = ideaFilter === 'All topics' ? ideas : ideas.filter((idea) => idea.category === ideaFilter)
+
+        function submitIdea(event) {
+          event.preventDefault()
+          if (!ideaForm.title.trim() || !ideaForm.description.trim() || !ideaForm.location.trim()) return
+          setIdeas((currentIdeas) => [{
+            id: Date.now(),
+            title: ideaForm.title.trim(),
+            description: ideaForm.description.trim(),
+            category: ideaForm.category,
+            location: ideaForm.location.trim(),
+            status: 'Open for ideas',
+            votes: 0,
+            ideas: 0,
+          }, ...currentIdeas])
+          setIdeaForm({ title: '', description: '', category: 'Farming & markets', location: '' })
+          setShowIdeaForm(false)
+        }
+
+        return (
+          <main className="ideas-page">
+            <header className="ideas-header">
+              <button type="button" className="brand-mark" onClick={() => setAccountView('dashboard')} aria-label="Return to dashboard">Rural<span>Commons</span></button>
+              <nav className="ideas-nav" aria-label="Community navigation"><button type="button" className="nav-active">Explore ideas</button><button type="button" onClick={() => setAccountView('dashboard')}>Dashboard</button></nav>
+              <button type="button" className="profile-button" onClick={() => setAccountView('details')} aria-label="Open account details" title="Account details">{currentUser.name.charAt(0).toUpperCase()}</button>
+            </header>
+            <section className="ideas-hero">
+              <div><p className="eyebrow">Community noticeboard</p><h1>Small ideas can change everyday life.</h1><p>Share a challenge from your village, learn from someone else's experience, and help useful ideas travel further.</p></div>
+              <div className="ideas-hero-stat"><strong>{ideas.length}</strong><span>community challenges<br />open to ideas</span></div>
+            </section>
+            <section className="ideas-toolbar"><div className="topic-filters" aria-label="Filter ideas">{categories.map((category) => <button type="button" className={ideaFilter === category ? 'selected' : ''} onClick={() => setIdeaFilter(category)} key={category}>{category}</button>)}</div><button type="button" className="share-idea-button" onClick={() => setShowIdeaForm(!showIdeaForm)}>{showIdeaForm ? 'Close form' : '+ Share a problem'}</button></section>
+            {showIdeaForm && <form className="idea-form" onSubmit={submitIdea}><div><p className="card-label">Start a conversation</p><h2>What is your community facing?</h2><p>Keep it specific so people can offer practical ideas.</p></div><label>Problem title<input value={ideaForm.title} onChange={(event) => setIdeaForm({ ...ideaForm, title: event.target.value })} placeholder="e.g. No cold storage near our village" required /></label><label>Describe the problem<textarea value={ideaForm.description} onChange={(event) => setIdeaForm({ ...ideaForm, description: event.target.value })} placeholder="What happens today, and who is affected?" rows="4" required /></label><div className="idea-form-row"><label>Topic<select value={ideaForm.category} onChange={(event) => setIdeaForm({ ...ideaForm, category: event.target.value })}><option>Farming & markets</option><option>Water & irrigation</option><option>Healthcare</option><option>Education</option><option>Transport & roads</option><option>Energy</option></select></label><label>Village or district<input value={ideaForm.location} onChange={(event) => setIdeaForm({ ...ideaForm, location: event.target.value })} placeholder="e.g. Nashik" required /></label></div><button type="submit">Publish problem</button></form>}
+            <section className="ideas-list"><div className="ideas-list-heading"><div><p className="eyebrow">Voices from rural communities</p><h2>What people are working through</h2></div><span>{visibleIdeas.length} stories</span></div>{visibleIdeas.length ? visibleIdeas.map((idea) => <article className="idea-card" key={idea.id}><div className="idea-card-top"><span className="idea-category">{idea.category}</span><span className="idea-status">{idea.status}</span></div><h3>{idea.title}</h3><p>{idea.description}</p><div className="idea-card-footer"><span className="idea-location">⌖ {idea.location}</span><div className="idea-actions"><button type="button" onClick={() => setIdeas((currentIdeas) => currentIdeas.map((item) => item.id === idea.id ? { ...item, votes: item.votes + 1 } : item))}>♡ {idea.votes}</button><span>{idea.ideas} ideas</span></div></div></article>) : <p className="empty-ideas">No stories in this topic yet. Be the first to share one.</p>}</section>
+          </main>
+        )
+      }
+
       return (
         <main className="dashboard-page">
           <header className="dashboard-header">
             <div>
-              <p className="eyebrow">Member dashboard</p>
-              <h1>Welcome, {currentUser.name}</h1>
+              <p className="eyebrow">RuralCommons member</p>
+              <h1>Welcome back, {currentUser.name}</h1>
             </div>
             <button type="button" className="profile-button" onClick={() => setAccountView('details')} aria-label="Open account details" title="Account details">
               {currentUser.name.charAt(0).toUpperCase()}
@@ -136,21 +212,22 @@ function App() {
           </header>
           <section className="dashboard-content">
             <div className="dashboard-intro">
-              <p className="dashboard-kicker">You are all set</p>
-              <h2>Your account is ready.</h2>
-              <p>Keep your details up to date and manage your membership from one place.</p>
+              <p className="dashboard-kicker">Your voice matters</p>
+              <h2>Turn local challenges into shared progress.</h2>
+              <p>RuralCommons brings community problems and practical ideas into one welcoming space.</p>
             </div>
             <div className="dashboard-grid">
-              <article className="dashboard-card profile-summary">
-                <span className="card-label">Profile status</span>
-                <strong>Complete</strong>
-                <p>Your registration details have been saved successfully.</p>
-                <button type="button" onClick={() => setAccountView('details')}>View account details</button>
+              <article className="dashboard-card community-card">
+                <span className="card-label">Community board</span>
+                <strong>Share a problem</strong>
+                <p>Help others understand what your village needs and discover ideas from across rural communities.</p>
+                <button type="button" onClick={() => setAccountView('ideas')}>Explore community ideas <span>→</span></button>
               </article>
-              <article className="dashboard-card">
-                <span className="card-label">Registered email</span>
-                <strong>{currentUser.email}</strong>
-                <p>Use this email address whenever you sign in.</p>
+              <article className="dashboard-card dashboard-profile-card">
+                <span className="card-label">Your membership</span>
+                <strong>Member</strong>
+                <p>Your profile is ready. Add your voice to the community board.</p>
+                <button type="button" onClick={() => setAccountView('details')}>View account details</button>
               </article>
             </div>
           </section>
