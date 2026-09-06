@@ -202,7 +202,7 @@ function App() {
     return (
       <main className="public-site">
         <header className="public-header">
-          <button type="button" className="public-logo" onClick={() => setPublicView('home')}>Form<span>space</span></button>
+          <button type="button" className="public-logo" onClick={() => setPublicView('home')}>From<span>space</span></button>
           <nav className="public-nav" aria-label="Main navigation">
             <button type="button" className={publicView === 'home' ? 'active' : ''} onClick={() => setPublicView('home')}>Home</button>
             <button type="button" className={publicView === 'about' ? 'active' : ''} onClick={() => setPublicView('about')}>About</button>
@@ -217,7 +217,7 @@ function App() {
         ) : (
           <section className="about-page"><div className="about-heading"><p className="eyebrow">The person behind the project</p><h1>Built with curiosity,<br /><em>shaped for people.</em></h1></div><div className="about-grid"><div className="creator-mark">RK<span>G</span></div><div className="creator-copy"><p className="creator-role">Student / Creator</p><h2>Raghav Krishnan G</h2><p>I'm a student building approachable digital experiences that make everyday online tasks feel simpler, clearer, and more human.</p><dl><div><dt>Based at</dt><dd>Sri Sairam Engineering College<br />Chennai, Tamil Nadu</dd></div><div><dt>Contact</dt><dd><a href="mailto:raghavkrishnan983@gmail.com">raghavkrishnan983@gmail.com</a></dd></div></dl><button type="button" className="hero-primary" onClick={() => { setMode('register'); setPublicView('auth') }}>Start your account <span>↗</span></button></div></div></section>
         )}
-        <footer className="public-footer"><span>Formspace / 2026</span><span>Made for clearer digital experiences</span></footer>
+        <footer className="public-footer"><span>Fromspace / 2026</span><span>Made for clearer digital experiences</span></footer>
       </main>
     )
   }
