@@ -52,6 +52,8 @@ function App() {
       setStatus({ type: 'success', message: result.message })
       setAccountName(result.user.name)
       setCurrentUser(result.user)
+      setAccountView('dashboard')
+      setHasContinued(true)
       setForm(mode === 'register' ? initialForm : { ...initialForm, email: '', password: '' })
     } catch (error) {
       setStatus({ type: 'error', message: error.message })
@@ -91,29 +93,66 @@ function App() {
         )
       }
 
+      if (accountView === 'details' || accountView === 'settings') {
+        return (
+          <main className="account-page">
+            <section className="account-card details-card">
+              <button type="button" className="back-button" onClick={() => setAccountView('dashboard')}>Dashboard</button>
+              <button type="button" className="settings-button" onClick={() => setAccountView('settings')} aria-label="Open account settings" title="Account settings">⚙</button>
+              <p className="eyebrow">Your profile</p>
+              <h1>Account details</h1>
+              <p className="account-message">Here is the information saved to your account.</p>
+              <dl className="account-details">
+                <div><dt>Full name</dt><dd>{currentUser.name}</dd></div>
+                <div><dt>Phone number</dt><dd>{currentUser.phone}</dd></div>
+                <div><dt>Date of birth</dt><dd>{currentUser.dob}</dd></div>
+                <div><dt>Email address</dt><dd>{currentUser.email}</dd></div>
+              </dl>
+              {accountView === 'settings' && (
+                <div className="settings-overlay" role="dialog" aria-modal="true" aria-label="Account settings">
+                  <button type="button" className="settings-close" onClick={() => setAccountView('details')} aria-label="Close settings">×</button>
+                  <p className="eyebrow">Account settings</p>
+                  <h2>Settings</h2>
+                  <p className="account-message">Manage your profile or leave your account.</p>
+                  <button type="button" className="edit-account-button" onClick={() => { setAccountForm({ ...currentUser }); setAccountView('edit') }}>Edit account</button>
+                  <button type="button" className="details-logout" onClick={() => { setCurrentUser(null); setAccountName(''); setHasContinued(false); setAccountView('details'); setStatus({ type: '', message: '' }) }}>Log out</button>
+                </div>
+              )}
+            </section>
+          </main>
+        )
+      }
+
       return (
-        <main className="account-page">
-          <section className="account-card details-card">
-            <button type="button" className="settings-button" onClick={() => setAccountView('settings')} aria-label="Open account settings" title="Account settings">⚙</button>
-            <p className="eyebrow">Your profile</p>
-            <h1>Account details</h1>
-            <p className="account-message">Here is the information saved to your account.</p>
-            <dl className="account-details">
-              <div><dt>Full name</dt><dd>{currentUser.name}</dd></div>
-              <div><dt>Phone number</dt><dd>{currentUser.phone}</dd></div>
-              <div><dt>Date of birth</dt><dd>{currentUser.dob}</dd></div>
-              <div><dt>Email address</dt><dd>{currentUser.email}</dd></div>
-            </dl>
-            {accountView === 'settings' && (
-              <div className="settings-overlay" role="dialog" aria-modal="true" aria-label="Account settings">
-                <button type="button" className="settings-close" onClick={() => setAccountView('details')} aria-label="Close settings">×</button>
-                <p className="eyebrow">Account settings</p>
-                <h2>Settings</h2>
-                <p className="account-message">Manage your profile or leave your account.</p>
-                <button type="button" className="edit-account-button" onClick={() => { setAccountForm({ ...currentUser }); setAccountView('edit') }}>Edit account</button>
-                <button type="button" className="details-logout" onClick={() => { setCurrentUser(null); setAccountName(''); setHasContinued(false); setAccountView('details'); setStatus({ type: '', message: '' }) }}>Log out</button>
-              </div>
-            )}
+        <main className="dashboard-page">
+          <header className="dashboard-header">
+            <div>
+              <p className="eyebrow">Member dashboard</p>
+              <h1>Welcome, {currentUser.name}</h1>
+            </div>
+            <button type="button" className="profile-button" onClick={() => setAccountView('details')} aria-label="Open account details" title="Account details">
+              {currentUser.name.charAt(0).toUpperCase()}
+            </button>
+          </header>
+          <section className="dashboard-content">
+            <div className="dashboard-intro">
+              <p className="dashboard-kicker">You are all set</p>
+              <h2>Your account is ready.</h2>
+              <p>Keep your details up to date and manage your membership from one place.</p>
+            </div>
+            <div className="dashboard-grid">
+              <article className="dashboard-card profile-summary">
+                <span className="card-label">Profile status</span>
+                <strong>Complete</strong>
+                <p>Your registration details have been saved successfully.</p>
+                <button type="button" onClick={() => setAccountView('details')}>View account details</button>
+              </article>
+              <article className="dashboard-card">
+                <span className="card-label">Registered email</span>
+                <strong>{currentUser.email}</strong>
+                <p>Use this email address whenever you sign in.</p>
+              </article>
+            </div>
           </section>
         </main>
       )
@@ -130,7 +169,7 @@ function App() {
             <span>Account email</span>
             <strong>{currentUser.email}</strong>
           </div>
-          <button type="button" className="continue-button" onClick={() => setHasContinued(true)}>Continue</button>
+          <button type="button" className="continue-button" onClick={() => { setAccountView('dashboard'); setHasContinued(true) }}>Continue</button>
         </section>
       </main>
     )
