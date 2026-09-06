@@ -198,7 +198,7 @@ function App() {
     )
   }
 
-  if (publicView === 'home' || publicView === 'about') {
+  if (['home', 'about', 'contact', 'privacy', 'terms'].includes(publicView)) {
     return (
       <main className="public-site">
         <header className="public-header">
@@ -214,10 +214,14 @@ function App() {
             <section className="public-hero"><div className="hero-copy"><p className="eyebrow">A simpler way to belong</p><h1>Your details. <em>Your space.</em></h1><p>One thoughtful place to create, manage, and access your member account with confidence.</p><div className="hero-actions"><button type="button" className="hero-primary" onClick={() => { setMode('register'); setPublicView('auth') }}>Create your account <span>↗</span></button><button type="button" className="hero-secondary" onClick={() => setPublicView('about')}>Meet the creator</button></div></div><div className="hero-art" aria-hidden="true"><div className="hero-art-label">MEMBER / 01</div><div className="hero-art-circle"><span>FS</span></div><div className="hero-art-line" /><div className="hero-art-note">Designed for clear<br />digital beginnings.</div></div></section>
             <section className="public-proof"><div><strong>01</strong><span>Simple by design</span></div><div><strong>02</strong><span>Secure account flow</span></div><div><strong>03</strong><span>Built with care</span></div></section>
           </>
-        ) : (
+        ) : publicView === 'about' ? (
           <section className="about-page"><div className="about-heading"><p className="eyebrow">The person behind the project</p><h1>Built with curiosity,<br /><em>shaped for people.</em></h1></div><div className="about-grid"><div className="creator-mark">RK<span>G</span></div><div className="creator-copy"><p className="creator-role">Student / Creator</p><h2>Raghav Krishnan G</h2><p>I'm a student building approachable digital experiences that make everyday online tasks feel simpler, clearer, and more human.</p><dl><div><dt>Based at</dt><dd>Sri Sairam Engineering College<br />Chennai, Tamil Nadu</dd></div><div><dt>Contact</dt><dd><a href="mailto:raghavkrishnan983@gmail.com">raghavkrishnan983@gmail.com</a></dd></div></dl><button type="button" className="hero-primary" onClick={() => { setMode('register'); setPublicView('auth') }}>Start your account <span>↗</span></button></div></div></section>
+        ) : publicView === 'contact' ? (
+          <section className="legal-page contact-page"><p className="eyebrow">Get in touch</p><h1>Have a question?</h1><p>For feedback, collaboration, or questions about Fromspace, contact the creator directly.</p><a className="contact-email" href="mailto:raghavkrishnan983@gmail.com">raghavkrishnan983@gmail.com <span>↗</span></a><div className="contact-details"><span>Raghav Krishnan G</span><span>Sri Sairam Engineering College</span><span>Chennai, Tamil Nadu</span></div></section>
+        ) : (
+          <section className="legal-page"><p className="eyebrow">Fromspace / {publicView === 'privacy' ? 'Privacy' : 'Terms'}</p><h1>{publicView === 'privacy' ? 'Privacy, made clear.' : 'Terms of use.'}</h1>{publicView === 'privacy' ? <><p>Fromspace collects the account information you provide, such as your name, email address, phone number, date of birth, and gender, so the service can create and manage your member account.</p><p>Your information is used for account access, profile management, and service communication. We do not sell your personal information. Keep your password private and contact us if you notice anything unusual.</p></> : <><p>By using Fromspace, you agree to provide accurate information and keep your account credentials secure. You are responsible for activity performed through your account.</p><p>Fromspace is a student-created project provided for account registration and profile management. Features may change as the project develops. Questions can be sent to the creator through the Contact page.</p></>}<button type="button" className="hero-secondary legal-back" onClick={() => setPublicView('home')}>← Back to Fromspace</button></section>
         )}
-        <footer className="public-footer"><span>Fromspace / 2026</span><span>Made for clearer digital experiences</span></footer>
+        <footer className="public-footer"><span>Fromspace / 2026</span><span className="footer-links"><button type="button" onClick={() => setPublicView('contact')}>Contact</button><button type="button" onClick={() => setPublicView('privacy')}>Privacy</button><button type="button" onClick={() => setPublicView('terms')}>Terms</button></span></footer>
       </main>
     )
   }
