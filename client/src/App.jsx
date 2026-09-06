@@ -29,6 +29,7 @@ function App() {
   const [accountView, setAccountView] = useState('details')
   const [accountForm, setAccountForm] = useState(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [publicView, setPublicView] = useState('home')
   const passwordScore = [
     form.password.length >= 6,
     /[A-Z]/.test(form.password),
@@ -122,7 +123,7 @@ function App() {
                   <h2>Settings</h2>
                   <p className="account-message">Manage your profile or leave your account.</p>
                   <button type="button" className="edit-account-button" onClick={() => { setAccountForm({ ...currentUser }); setAccountView('edit') }}>Edit account</button>
-                  <button type="button" className="details-logout" onClick={() => { setCurrentUser(null); setAccountName(''); setHasContinued(false); setAccountView('details'); setStatus({ type: '', message: '' }) }}>Log out</button>
+                  <button type="button" className="details-logout" onClick={() => { setCurrentUser(null); setAccountName(''); setHasContinued(false); setAccountView('details'); setPublicView('home'); setStatus({ type: '', message: '' }) }}>Log out</button>
                 </div>
               )}
             </section>
@@ -197,6 +198,30 @@ function App() {
     )
   }
 
+  if (publicView === 'home' || publicView === 'about') {
+    return (
+      <main className="public-site">
+        <header className="public-header">
+          <button type="button" className="public-logo" onClick={() => setPublicView('home')}>Form<span>space</span></button>
+          <nav className="public-nav" aria-label="Main navigation">
+            <button type="button" className={publicView === 'home' ? 'active' : ''} onClick={() => setPublicView('home')}>Home</button>
+            <button type="button" className={publicView === 'about' ? 'active' : ''} onClick={() => setPublicView('about')}>About</button>
+          </nav>
+          <div className="public-actions"><button type="button" className="public-signin" onClick={() => { setMode('login'); setPublicView('auth') }}>Sign in</button><button type="button" className="public-join" onClick={() => { setMode('register'); setPublicView('auth') }}>Join now <span>↗</span></button></div>
+        </header>
+        {publicView === 'home' ? (
+          <>
+            <section className="public-hero"><div className="hero-copy"><p className="eyebrow">A simpler way to belong</p><h1>Your details. <em>Your space.</em></h1><p>One thoughtful place to create, manage, and access your member account with confidence.</p><div className="hero-actions"><button type="button" className="hero-primary" onClick={() => { setMode('register'); setPublicView('auth') }}>Create your account <span>↗</span></button><button type="button" className="hero-secondary" onClick={() => setPublicView('about')}>Meet the creator</button></div></div><div className="hero-art" aria-hidden="true"><div className="hero-art-label">MEMBER / 01</div><div className="hero-art-circle"><span>FS</span></div><div className="hero-art-line" /><div className="hero-art-note">Designed for clear<br />digital beginnings.</div></div></section>
+            <section className="public-proof"><div><strong>01</strong><span>Simple by design</span></div><div><strong>02</strong><span>Secure account flow</span></div><div><strong>03</strong><span>Built with care</span></div></section>
+          </>
+        ) : (
+          <section className="about-page"><div className="about-heading"><p className="eyebrow">The person behind the project</p><h1>Built with curiosity,<br /><em>shaped for people.</em></h1></div><div className="about-grid"><div className="creator-mark">RK<span>G</span></div><div className="creator-copy"><p className="creator-role">Student / Creator</p><h2>Raghav Krishnan G</h2><p>I'm a student building approachable digital experiences that make everyday online tasks feel simpler, clearer, and more human.</p><dl><div><dt>Based at</dt><dd>Sri Sairam Engineering College<br />Chennai, Tamil Nadu</dd></div><div><dt>Contact</dt><dd><a href="mailto:raghavkrishnan983@gmail.com">raghavkrishnan983@gmail.com</a></dd></div></dl><button type="button" className="hero-primary" onClick={() => { setMode('register'); setPublicView('auth') }}>Start your account <span>↗</span></button></div></div></section>
+        )}
+        <footer className="public-footer"><span>Formspace / 2026</span><span>Made for clearer digital experiences</span></footer>
+      </main>
+    )
+  }
+
   return (
     <main className="page-shell">
       <section className="intro-panel">
@@ -220,10 +245,10 @@ function App() {
       <section className="form-panel">
         <form onSubmit={handleSubmit}>
           <div className="form-heading">
-            <div className="mode-switch" role="tablist" aria-label="Account action">
+            <div className="auth-topline"><button type="button" className="auth-back" onClick={() => setPublicView('home')}>← Home</button><div className="mode-switch" role="tablist" aria-label="Account action">
               <button type="button" className={mode === 'register' ? 'active' : ''} onClick={() => { setMode('register'); setStatus({ type: '', message: '' }) }}>Register</button>
               <button type="button" className={mode === 'login' ? 'active' : ''} onClick={() => { setMode('login'); setStatus({ type: '', message: '' }) }}>Sign in</button>
-            </div>
+            </div></div>
             <p className="eyebrow">{mode === 'register' ? 'New member' : 'Welcome back'}</p>
             <h2>{mode === 'register' ? 'Personal details' : 'Sign in to your account'}</h2>
             <p className="form-description">{mode === 'register' ? 'A few details and you are ready to get started.' : 'Enter your details to continue securely.'}</p>
