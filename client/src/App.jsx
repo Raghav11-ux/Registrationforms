@@ -148,6 +148,11 @@ function App() {
               <h2>Your account is ready.</h2>
               <p>Keep your details up to date and manage your membership from one place.</p>
             </div>
+            <div className="dashboard-signal">
+              <div><span className="signal-number">01</span><span><strong>Member space</strong><small>A place for your account and next steps.</small></span></div>
+              <div><span className="signal-number">02</span><span><strong>Profile ready</strong><small>Your essential details are complete.</small></span></div>
+              <div><span className="signal-number">03</span><span><strong>Stay connected</strong><small>Return anytime to manage your profile.</small></span></div>
+            </div>
             <div className="dashboard-grid dashboard-metrics">
               <article className="dashboard-card profile-summary">
                 <span className="card-label">Profile status</span>
@@ -205,6 +210,10 @@ function App() {
               : 'Sign in to continue to your account.'}
         </p>
         <div className="accent-line" />
+        <div className="intro-visual" aria-hidden="true">
+          <div className="intro-orbit"><span className="orbit-ring orbit-ring-one" /><span className="orbit-ring orbit-ring-two" /><strong>RC</strong></div>
+          <div className="intro-signal"><span>01</span><i /><span>READY TO BEGIN</span></div>
+        </div>
         <p className="panel-note">Your details are sent securely to the registration server.</p>
       </section>
 
